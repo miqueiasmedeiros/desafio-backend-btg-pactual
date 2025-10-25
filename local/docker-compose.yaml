@@ -1,14 +1,32 @@
+version: "3.8"
+
 services:
   mongoddb:
     image: mongo:latest
+    container_name: mongodb
     ports:
       - 27017:27017
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin 
+      - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=root
 
   rabbitmq:
     image: rabbitmq:3.13-management
+    container_name: rabbitmq
     ports:
       - 15672:15672
       - 5672:5672
+
+  orderms:
+    image: orderms-app
+    container_name: orderms
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongoddb
+      - rabbitmq
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongodb
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_USERNAME=admin
+      - SPRING_DATA_MONGODB_PASSWORD=root
