@@ -1,32 +1,28 @@
-version: "3.8"
-
 services:
-  mongoddb:
+  mongodb:
     image: mongo:latest
-    container_name: mongodb
+    container_name: local-mongodb-1
     ports:
-      - 27017:27017
+      - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=root
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: btgpactualdb
+    volumes:
+      - mongo_data:/data/db
 
   rabbitmq:
     image: rabbitmq:3.13-management
-    container_name: rabbitmq
+    container_name: local-rabbitmq-1
     ports:
-      - 15672:15672
-      - 5672:5672
-
-  orderms:
-    image: orderms-app
-    container_name: orderms
-    ports:
-      - 8080:8080
-    depends_on:
-      - mongoddb
-      - rabbitmq
+      - "5672:5672"    # porta padrão do RabbitMQ
+      - "15672:15672"  # painel web
     environment:
-      - SPRING_DATA_MONGODB_HOST=mongodb
-      - SPRING_DATA_MONGODB_PORT=27017
-      - SPRING_DATA_MONGODB_USERNAME=admin
-      - SPRING_DATA_MONGODB_PASSWORD=root
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
